@@ -1,0 +1,514 @@
+
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Compara el coste de un NAS personal frente a la nube pública. Calculadora gratuita.">
+<meta name="theme-color" content="#101828">
+<title>NAS vs. Nube | Comparador gratuito</title>
+<style>
+:root {
+  --bg:#f4f6fb; --card:#fff; --ink:#182238;
+  --muted:#667085; --line:#e1e6ef; --blue:#405cf5;
+  --teal:#087f8c; --navy:#101828; --soft:#edf1ff;
+  --radius:18px;
+}
+* { box-sizing:border-box }
+html { scroll-behavior:smooth }
+body {
+  margin:0; background:var(--bg); color:var(--ink);
+  font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif;
+}
+button,input,select { font:inherit }
+button { cursor:pointer }
+.wrap { width:min(1160px,calc(100% - 32px)); margin:auto }
+header {
+  background:radial-gradient(ellipse at 90% 0,#3648a7,transparent 45%),var(--navy);
+  color:white; padding:25px 0 55px;
+}
+nav { display:flex; justify-content:space-between; gap:15px; align-items:center; margin-bottom:45px }
+.brand { font-size:1.15rem; font-weight:850; letter-spacing:-.04em }
+nav span:last-child { color:#cbd5e1; font-size:.8rem }
+.eyebrow { color:#dbe4ff; font-size:.78rem; font-weight:750; letter-spacing:.08em }
+h1 { font-size:clamp(2.5rem,6vw,4.4rem); line-height:1.04; letter-spacing:-.06em; max-width:780px; margin:15px 0 }
+.hero p { color:#d0d5dd; max-width:700px; font-size:1.08rem }
+.btn {
+  border:0; border-radius:11px; padding:12px 16px;
+  font-weight:750; display:inline-block; text-decoration:none;
+}
+.primary { background:var(--blue); color:white }
+.light { background:white; color:var(--navy) }
+.secondary { background:#edf0f7; color:#344054 }
+.actions { display:flex; flex-wrap:wrap; gap:10px; margin-top:22px }
+main { padding-bottom:40px }
+.notice {
+  margin-top:-23px; position:relative; background:#fff4d9;
+  border:1px solid #f2d89b; color:#70420a; border-radius:13px;
+  padding:14px 16px; font-size:.88rem;
+}
+.layout { display:grid; grid-template-columns:.95fr 1.05fr; gap:22px; margin-top:24px; align-items:start }
+.card { background:var(--card); border:1px solid var(--line); border-radius:var(--radius); overflow:hidden; box-shadow:0 9px 28px #10182809 }
+.cardhead { padding:21px; border-bottom:1px solid var(--line) }
+.cardhead h2 { margin:0 0 5px; font-size:1.22rem }
+.cardhead p,.muted { color:var(--muted); font-size:.86rem; margin:0 }
+.pad { padding:21px }
+.group + .group { border-top:1px solid var(--line); margin-top:23px; padding-top:20px }
+.group h3 { margin:0 0 14px; font-size:.96rem }
+.fields { display:grid; grid-template-columns:1fr 1fr; gap:13px }
+.field { min-width:0 }
+.field label { display:block; font-size:.81rem; font-weight:700; margin-bottom:6px }
+input[type=number],select {
+  width:100%; padding:10px; border:1px solid #cbd2df;
+  border-radius:9px; background:white; color:var(--ink); min-height:43px;
+}
+input:focus,select:focus { outline:2px solid #c4ceff; border-color:var(--blue) }
+.help { color:var(--muted); font-size:.73rem; margin-top:5px }
+.full { grid-column:1/-1 }
+.resulthead { display:flex; justify-content:space-between; gap:12px; align-items:start; margin-bottom:18px }
+.resulthead h2 { margin:0 0 4px; font-size:1.22rem }
+.pill { border-radius:99px; background:#e7f7f2; color:#087f61; padding:5px 9px; font-size:.72rem; font-weight:800; white-space:nowrap }
+.winner { background:linear-gradient(135deg,#edf1ff,#eaf9f7); border:1px solid #dbe2ff; padding:16px; border-radius:14px; margin-bottom:15px }
+.winner .small { font-size:.72rem; color:#475467; font-weight:800; text-transform:uppercase; letter-spacing:.06em }
+.winner h3 { margin:6px 0; font-size:1.12rem; line-height:1.3 }
+.winner p { margin:0; font-size:.85rem; color:#475467 }
+.metrics { display:grid; grid-template-columns:repeat(3,1fr); gap:9px; margin-bottom:17px }
+.metric { padding:12px; border:1px solid var(--line); border-radius:12px; min-width:0 }
+.metric span { display:block; color:var(--muted); font-size:.73rem }
+.metric strong { display:block; font-size:1.15rem; overflow-wrap:anywhere; letter-spacing:-.03em }
+.metric small { color:var(--muted); font-size:.7rem }
+.chartbox,.tablebox { border:1px solid var(--line); border-radius:13px; padding:14px; margin:15px 0 }
+.chartbox h3,.section h2 { margin:0 0 13px; font-size:1.05rem }
+.legend { font-size:.75rem; color:var(--muted); margin-bottom:13px }
+.dot { display:inline-block; width:9px; height:9px; border-radius:3px; margin:0 5px 0 10px }
+.barrow { display:grid; grid-template-columns:43px 1fr 76px; gap:8px; align-items:center; margin:13px 0; font-size:.76rem }
+.track { height:13px; border-radius:20px; overflow:hidden; background:#edf0f5; display:flex }
+.bar { height:100%; transition:width .2s }
+.nasbar { background:var(--blue) }
+.cloudbar { background:var(--teal) }
+.barvalue { text-align:right; font-weight:750; font-size:.72rem }
+table { width:100%; border-collapse:collapse; font-size:.8rem; min-width:420px }
+th,td { text-align:left; padding:10px 9px; border-bottom:1px solid var(--line) }
+th { background:#f7f8fc; color:#475467; font-size:.7rem }
+td:not(:first-child),th:not(:first-child) { text-align:right; font-variant-numeric:tabular-nums }
+tr:last-child td { border-bottom:0 }
+.tablebox { overflow-x:auto; padding:0 }
+.tablebox h3 { padding:14px 14px 0; margin:0; font-size:.96rem }
+.tablebox table { margin-top:10px }
+.note { color:var(--muted); font-size:.76rem; margin-top:12px }
+.section { margin-top:37px }
+.sectionintro { color:var(--muted); margin:-5px 0 17px; font-size:.9rem }
+.features { display:grid; grid-template-columns:repeat(3,1fr); gap:13px }
+.feature { background:white; border:1px solid var(--line); border-radius:14px; padding:17px }
+.feature h3 { margin:0 0 7px; font-size:.95rem }
+.feature p { margin:0; color:var(--muted); font-size:.83rem }
+.tag { display:inline-block; padding:4px 7px; border-radius:6px; font-size:.71rem; font-weight:750 }
+.good { background:#dcfae6; color:#067647 }
+.mid { background:#fff0c2; color:#854a0e }
+.dep { background:#edf0ff; color:#3538cd }
+details { background:white; border:1px solid var(--line); border-radius:12px; padding:14px 16px; margin-top:9px }
+summary { cursor:pointer; font-weight:750; font-size:.88rem }
+details p { color:#475467; font-size:.83rem; margin-bottom:0 }
+footer { color:var(--muted); padding:25px 0 40px; font-size:.78rem }
+footer div { border-top:1px solid var(--line); padding-top:18px }
+@media(max-width:850px) { .layout { grid-template-columns:1fr } }
+@media(max-width:580px) {
+  .wrap { width:calc(100% - 22px) }
+  header { padding:20px 0 43px }
+  nav { margin-bottom:32px }
+  nav span:last-child { display:none }
+  h1 { font-size:2.55rem }
+  .fields { grid-template-columns:1fr }
+  .full { grid-column:auto }
+  .metrics { grid-template-columns:1fr 1fr }
+  .metric:last-child { grid-column:1/-1 }
+  .features { grid-template-columns:1fr }
+  .pad { padding:15px }
+  .barrow { grid-template-columns:38px 1fr 66px; gap:6px }
+}
+@media print {
+  header { background:#fff; color:#111; padding:10px }
+  header p,nav span:last-child { color:#444 }
+  .layout { grid-template-columns:1fr 1fr }
+  .actions,form button { display:none }
+  body { background:white }
+  .card,.feature { box-shadow:none; break-inside:avoid }
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <nav>
+      <div class="brand">▣ NAS vs. Nube</div>
+      <span>Comparador gratuito de almacenamiento</span>
+    </nav>
+    <div class="hero">
+      <div class="eyebrow">CALCULADORA DE COSTES Y SEGURIDAD</div>
+      <h1>¿Guardar tus datos en casa o en la nube?</h1>
+      <p>Compara la inversión, los gastos acumulados, el crecimiento de tus datos y los principales factores de seguridad antes de decidir.</p>
+      <div class="actions">
+        <a class="btn light" href="#calculadora">Empezar comparación ↓</a>
+        <a class="btn" style="border:1px solid #ffffff55;color:white" href="#metodo">Ver metodología</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="notice"><strong>Importante:</strong> los números iniciales son ejemplos ilustrativos, no precios reales ni actualizados de proveedores. Modifícalos con tus presupuestos. La recomendación se basa en los costes introducidos y no sustituye una evaluación técnica.</div>
+
+  <section class="layout" id="calculadora">
+    <div class="card">
+      <div class="cardhead">
+        <h2>Configura tu escenario</h2>
+        <p>Introduce tus datos. Los resultados se recalculan automáticamente.</p>
+      </div>
+      <form class="pad" id="form">
+        <div class="group">
+          <h3>1. Tus necesidades</h3>
+          <div class="fields">
+            <div class="field">
+              <label for="data">Datos actuales (TB)</label>
+              <input id="data" type="number" min=".1" max="1000" step=".1" value="2" required>
+            </div>
+            <div class="field">
+              <label for="growth">Crecimiento anual (%)</label>
+              <input id="growth" type="number" min="0" max="300" step="1" value="20" required>
+            </div>
+            <div class="field">
+              <label for="years">Periodo</label>
+              <select id="years"><option value="1">1 año</option><option value="3">3 años</option><option value="5" selected>5 años</option></select>
+            </div>
+            <div class="field">
+              <label for="backup">Incluir costes de respaldo</label>
+              <select id="backup"><option value="yes" selected>Sí</option><option value="no">No</option></select>
+            </div>
+          </div>
+        </div>
+
+        <div class="group">
+          <h3>2. NAS personal</h3>
+          <div class="fields">
+            <div class="field"><label for="device">Precio del NAS (€)</label><input id="device" type="number" min="0" step="10" value="350" required></div>
+            <div class="field"><label for="disks">Discos iniciales (€ total)</label><input id="disks" type="number" min="0" step="10" value="250" required></div>
+            <div class="field"><label for="capacity">Capacidad útil inicial (TB)</label><input id="capacity" type="number" min=".1" step=".1" value="4" required><div class="help">Después de RAID y redundancia.</div></div>
+            <div class="field"><label for="expansion">Coste por TB adicional (€)</label><input id="expansion" type="number" min="0" step="5" value="35" required></div>
+            <div class="field"><label for="power">Consumo medio (W)</label><input id="power" type="number" min="0" step="1" value="25" required></div>
+            <div class="field"><label for="electricity">Electricidad (€/kWh)</label><input id="electricity" type="number" min="0" step=".01" value=".25" required></div>
+            <div class="field"><label for="maintenance">Mantenimiento anual (€)</label><input id="maintenance" type="number" min="0" step="10" value="40" required></div>
+            <div class="field"><label for="nasBackup">Respaldo externo inicial (€)</label><input id="nasBackup" type="number" min="0" step="10" value="100" required></div>
+          </div>
+        </div>
+
+        <div class="group">
+          <h3>3. Nube pública</h3>
+          <div class="fields">
+            <div class="field"><label for="monthly">Suscripción mensual (€)</label><input id="monthly" type="number" min="0" step=".5" value="10" required></div>
+            <div class="field"><label for="cloudCapacity">Capacidad incluida (TB)</label><input id="cloudCapacity" type="number" min=".1" step=".1" value="2" required></div>
+            <div class="field"><label for="extra">Precio por TB extra al mes (€)</label><input id="extra" type="number" min="0" step=".5" value="4" required></div>
+            <div class="field"><label for="cloudBackup">Respaldo adicional mensual (€)</label><input id="cloudBackup" type="number" min="0" step=".5" value="3" required></div>
+          </div>
+          <p class="help">Introduce la tarifa real y comprueba si incluye impuestos, sincronización, versiones y recuperación.</p>
+        </div>
+        <div class="actions">
+          <button class="btn primary" type="button" id="recalculate">Actualizar resultados ↻</button>
+          <button class="btn secondary" type="button" id="reset">Restaurar ejemplos</button>
+        </div>
+        <p class="note">Privacidad: esta versión no envía los valores a un servidor ni los guarda después de cerrar o recargar la página.</p>
+      </form>
+    </div>
+
+    <div class="card">
+      <div class="pad" aria-live="polite">
+        <div class="resulthead">
+          <div><h2>Tu comparación</h2><p class="muted" id="subtitle">Costes acumulados estimados a 5 años</p></div>
+          <span class="pill">Cálculo local</span>
+        </div>
+        <div class="winner" id="winner">
+          <div class="small">Resultado orientativo</div>
+          <h3>Calculando tu escenario…</h3>
+          <p>Introduce los costes de tus alternativas.</p>
+        </div>
+        <div class="metrics">
+          <div class="metric"><span>Total NAS</span><strong id="nasTotal">—</strong><small id="nasAvg"></small></div>
+          <div class="metric"><span>Total nube</span><strong id="cloudTotal">—</strong><small id="cloudAvg"></small></div>
+          <div class="metric"><span>Diferencia</span><strong id="difference">—</strong><small id="diffLabel"></small></div>
+        </div>
+        <div class="chartbox">
+          <h3>Coste acumulado por año</h3>
+          <div class="legend"><i class="dot" style="background:var(--blue)"></i> NAS <i class="dot" style="background:var(--teal)"></i> Nube</div>
+          <div id="chart"></div>
+          <p class="note">Valores mostrados en euros. El gráfico compara el coste acumulado hasta cada año.</p>
+        </div>
+        <div class="tablebox">
+          <h3>Detalle anual</h3>
+          <table>
+            <thead><tr><th>Año</th><th>Datos (TB)</th><th>NAS</th><th>Nube</th></tr></thead>
+            <tbody id="yearRows"></tbody>
+          </table>
+        </div>
+        <div class="tablebox">
+          <h3>Desglose del coste total</h3>
+          <table>
+            <thead><tr><th>Concepto</th><th>NAS</th><th>Nube</th></tr></thead>
+            <tbody id="breakdown"></tbody>
+          </table>
+        </div>
+        <p class="note" id="capacityNote"></p>
+        <div class="actions">
+          <button class="btn primary" type="button" id="csv">Descargar CSV</button>
+          <button class="btn secondary" type="button" id="print">Imprimir / guardar PDF</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="seguridad">
+    <h2>Seguridad y características</h2>
+    <p class="sectionintro">La mejor elección no depende solo del precio. Compara también el mantenimiento, el control y la recuperación.</p>
+    <div class="tablebox">
+      <table>
+        <thead><tr><th>Criterio</th><th>NAS personal</th><th>Nube pública</th></tr></thead>
+        <tbody>
+          <tr><td>Control de los datos</td><td><span class="tag good">Control directo</span></td><td><span class="tag dep">Depende del proveedor</span></td></tr>
+          <tr><td>Acceso remoto</td><td><span class="tag mid">Requiere configuración</span></td><td><span class="tag good">Normalmente integrado</span></td></tr>
+          <tr><td>Mantenimiento técnico</td><td><span class="tag mid">A cargo del usuario</span></td><td><span class="tag good">Infraestructura gestionada</span></td></tr>
+          <tr><td>Capacidad de ampliación</td><td><span class="tag dep">Limitada por hardware</span></td><td><span class="tag good">Según el plan contratado</span></td></tr>
+          <tr><td>Recuperación ante desastres</td><td><span class="tag dep">Necesita respaldo independiente</span></td><td><span class="tag dep">Depende del servicio contratado</span></td></tr>
+          <tr><td>Privacidad</td><td><span class="tag dep">Depende de la configuración</span></td><td><span class="tag dep">Depende del proveedor y ajustes</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note">Las etiquetas son orientativas. RAID no es una copia de seguridad; la sincronización tampoco garantiza recuperar archivos borrados o cifrados por malware.</p>
+  </section>
+
+  <section class="section" id="metodo">
+    <h2>Cómo funciona la calculadora</h2>
+    <p class="sectionintro">Las fórmulas son aproximaciones transparentes; los resultados no son tarifas en tiempo real.</p>
+    <div class="features">
+      <article class="feature"><h3>Coste del NAS</h3><p>Equipo + discos + respaldo inicial + electricidad + mantenimiento + ampliaciones necesarias.</p></article>
+      <article class="feature"><h3>Coste de la nube</h3><p>Suscripción anual + capacidad adicional + respaldo adicional, si lo has seleccionado.</p></article>
+      <article class="feature"><h3>Crecimiento de datos</h3><p>Datos previstos = datos actuales × (1 + crecimiento anual) elevado al número de años.</p></article>
+    </div>
+    <details>
+      <summary>¿Cómo se calcula la electricidad?</summary>
+      <p>Potencia media en vatios × 24 × 365 ÷ 1.000 × precio por kWh × años. Se supone que el NAS permanece encendido las 24 horas y que la potencia introducida es el consumo medio real.</p>
+    </details>
+    <details>
+      <summary>¿Cómo se estiman las ampliaciones?</summary>
+      <p>El modelo estima el coste de los TB que excedan la capacidad útil inicial del NAS. Para la nube, cobra el precio extra por cada TB por encima de la capacidad incluida. Se trata de una aproximación lineal: los planes reales pueden venderse por tramos o paquetes completos.</p>
+    </details>
+    <details>
+      <summary>¿Qué costes no se incluyen automáticamente?</summary>
+      <p>Inflación, subida de tarifas, descuentos temporales, sustitución de discos, router, conexión a Internet, impuestos no incluidos, tiempo de mantenimiento, recuperación profesional y posibles cargos de transferencia. Añade esos conceptos a tu evaluación si son relevantes.</p>
+    </details>
+    <details>
+      <summary>¿Es una recomendación de seguridad?</summary>
+      <p>No es una auditoría. Para ambas alternativas, utiliza contraseñas únicas, MFA y cifrado cuando corresponda. En un NAS, mantén el firmware actualizado y evita exponer servicios innecesarios a Internet. Conserva una copia independiente y prueba su restauración.</p>
+    </details>
+  </section>
+  <section class="section">
+    <div class="notice" style="margin:0"><strong>Nota legal:</strong> herramienta informativa y orientativa. Verifica los precios, impuestos, capacidad útil, privacidad y condiciones del proveedor antes de comprar. Si añades analítica, publicidad o formularios en futuras versiones, revisa las obligaciones legales y de privacidad aplicables.</div>
+  </section>
+</main>
+
+<footer><div class="wrap"><strong>NAS vs. Nube</strong> · Comparador gratuito · Sin registro · <span id="year"></span></div></footer>
+
+<script>
+(() => {
+  "use strict";
+  const $ = id => document.getElementById(id);
+  const fields = [
+    "data","growth","years","backup","device","disks","capacity",
+    "expansion","power","electricity","maintenance","nasBackup",
+    "monthly","cloudCapacity","extra","cloudBackup"
+  ];
+  const defaults = {
+    data:2,growth:20,years:"5",backup:"yes",device:350,disks:250,
+    capacity:4,expansion:35,power:25,electricity:.25,maintenance:40,
+    nasBackup:100,monthly:10,cloudCapacity:2,extra:4,cloudBackup:3
+  };
+  let report = null;
+  const eur = n => new Intl.NumberFormat("es-ES",{
+    style:"currency",currency:"EUR",maximumFractionDigits:0
+  }).format(n);
+  const eur2 = n => new Intl.NumberFormat("es-ES",{
+    style:"currency",currency:"EUR",maximumFractionDigits:2
+  }).format(n);
+  const fmt = n => new Intl.NumberFormat("es-ES",{
+    maximumFractionDigits:2
+  }).format(n);
+
+  function read() {
+    const x = {};
+    for (const id of fields) {
+      const el = $(id);
+      if (el.type === "number") {
+        const n = Number(el.value);
+        if (el.value.trim()==="" || !Number.isFinite(n) ||
+            n < Number(el.min) || (el.max && n > Number(el.max))) {
+          el.focus();
+          throw new Error("Revisa el campo: " + el.labels[0].textContent);
+        }
+        x[id] = n;
+      } else x[id] = el.value;
+    }
+    return x;
+  }
+
+  function calculate(x) {
+    const years = Number(x.years);
+    const backup = x.backup === "yes";
+    const annualPower = x.power * 24 * 365 / 1000 * x.electricity;
+    const parts = {
+      device:x.device, disks:x.disks, nasBackup:backup?x.nasBackup:0,
+      power:0, maintenance:0, expansion:0, cloudBase:0,
+      cloudExtra:0, cloudBackup:0
+    };
+    let nas = 0, cloud = 0;
+    const rows = [];
+
+    for (let year=0; year<=years; year++) {
+      const data = x.data * Math.pow(1+x.growth/100,year);
+      let nc = 0, cc = 0;
+
+      if (year===0) {
+        nc = x.device + x.disks + (backup ? x.nasBackup : 0);
+      } else {
+        nc = annualPower + x.maintenance;
+        parts.power += annualPower;
+        parts.maintenance += x.maintenance;
+
+        const extraNas = Math.max(0,data-x.capacity)*x.expansion;
+        nc += extraNas;
+        parts.expansion += extraNas;
+
+        cc = x.monthly*12;
+        parts.cloudBase += cc;
+        const extraCloud = Math.max(0,data-x.cloudCapacity)*x.extra*12;
+        cc += extraCloud;
+        parts.cloudExtra += extraCloud;
+
+        if (backup) {
+          cc += x.cloudBackup*12;
+          parts.cloudBackup += x.cloudBackup*12;
+        }
+      }
+
+      nas += nc;
+      cloud += cc;
+      if (year>0) rows.push({year,data,nas,cloud});
+    }
+
+    return {
+      years, rows, parts, nas, cloud,
+      maxData:x.data*Math.pow(1+x.growth/100,years),
+      winner:nas<=cloud?"NAS":"Nube"
+    };
+  }
+
+  function render() {
+    try {
+      const x=read(), r=calculate(x);
+      report={x,r};
+
+      $("subtitle").textContent=`Coste acumulado estimado a ${r.years} ${r.years===1?"año":"años"}`;
+      $("nasTotal").textContent=eur(r.nas);
+      $("cloudTotal").textContent=eur(r.cloud);
+      $("nasAvg").textContent=eur2(r.nas/r.years)+" de media/año";
+      $("cloudAvg").textContent=eur2(r.cloud/r.years)+" de media/año";
+      $("difference").textContent=eur(Math.abs(r.nas-r.cloud));
+      $("diffLabel").textContent=r.nas<=r.cloud?"Menor coste: NAS":"Menor coste: nube";
+
+      let explanation = r.nas<=r.cloud
+        ? "Con los valores introducidos, el NAS tiene el menor coste acumulado."
+        : "Con los valores introducidos, la nube tiene el menor coste acumulado.";
+      if(r.maxData>x.capacity)
+        explanation += ` Los datos crecerían hasta ${fmt(r.maxData)} TB, superando la capacidad útil inicial del NAS.`;
+      if(r.maxData>x.cloudCapacity)
+        explanation += ` La capacidad prevista supera la incluida en el plan de nube.`;
+      explanation += " El resultado compara costes, no determina por sí solo qué opción es más segura.";
+      $("winner").innerHTML=
+        `<div class="small">Resultado por coste · Orientativo</div>
+         <h3>${r.winner==="NAS"?"El NAS resulta más económico":"La nube resulta más económica"} en este escenario</h3>
+         <p>${explanation}</p>`;
+
+      const max=Math.max(1,...r.rows.flatMap(row=>[row.nas,row.cloud]));
+      $("chart").innerHTML=r.rows.map(row=>{
+        const a=Math.min(100,row.nas/max*100);
+        const b=Math.min(100,row.cloud/max*100);
+        return `<div class="barrow">
+          <strong>Año ${row.year}</strong>
+          <div class="track" role="img" aria-label="Año ${row.year}: NAS ${eur(row.nas)}, nube ${eur(row.cloud)}">
+            <div class="bar nasbar" style="width:${a}%"></div>
+            <div class="bar cloudbar" style="width:${b}%"></div>
+          </div>
+          <span class="barvalue">${eur(row.nas)} / ${eur(row.cloud)}</span>
+        </div>`;
+      }).join("");
+
+      $("yearRows").innerHTML=r.rows.map(row=>`
+        <tr><td>${row.year}</td><td>${fmt(row.data)}</td>
+        <td>${eur(row.nas)}</td><td>${eur(row.cloud)}</td></tr>`).join("");
+
+      const p=r.parts;
+      const breakdown=[
+        ["Equipo NAS",p.device,null],["Discos iniciales",p.disks,null],
+        ["Respaldo inicial",p.nasBackup,null],["Electricidad",p.power,null],
+        ["Mantenimiento",p.maintenance,null],["Ampliaciones estimadas",p.expansion,p.cloudExtra],
+        ["Suscripción base",null,p.cloudBase],["Respaldo recurrente",null,p.cloudBackup]
+      ];
+      $("breakdown").innerHTML=breakdown.map(row=>`
+        <tr><td>${row[0]}</td><td>${row[1]===null?"—":eur(row[1])}</td>
+        <td>${row[2]===null?"—":eur(row[2])}</td></tr>`).join("");
+
+      $("capacityNote").textContent=
+        `Datos al final del periodo: ${fmt(r.maxData)} TB. Capacidad NAS: ${fmt(x.capacity)} TB útiles. Capacidad incluida en nube: ${fmt(x.cloudCapacity)} TB. Las ampliaciones se calculan linealmente; los proveedores pueden vender capacidades por tramos.`;
+    } catch(e) {
+      alert(e.message);
+    }
+  }
+
+  function reset() {
+    for(const [id,value] of Object.entries(defaults)) $(id).value=value;
+    render();
+  }
+
+  function csv() {
+    if(!report) return;
+    const {x,r}=report;
+    const rows=[
+      ["Informe orientativo NAS vs. Nube"],
+      ["Fecha",new Date().toLocaleString("es-ES")],
+      ["Aviso","Valores de usuario; no son precios verificados en tiempo real"],
+      ["Periodo (años)",r.years],["Datos iniciales (TB)",x.data],
+      ["Crecimiento anual (%)",x.growth],
+      ["Coste total NAS (EUR)",r.nas.toFixed(2)],
+      ["Coste total nube (EUR)",r.cloud.toFixed(2)],
+      ["Menor coste",r.winner],[],
+      ["Año","Datos previstos (TB)","NAS acumulado (EUR)","Nube acumulada (EUR)"],
+      ...r.rows.map(a=>[a.year,a.data.toFixed(2),a.nas.toFixed(2),a.cloud.toFixed(2)])
+    ];
+    const content="\uFEFF"+rows.map(row=>row.map(v=>
+      `"${String(v??"").replace(/"/g,'""')}"`
+    ).join(";")).join("\r\n");
+    const blob=new Blob([content],{type:"text/csv;charset=utf-8"});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement("a");
+    a.href=url;a.download="comparacion-nas-nube.csv";a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  $("recalculate").addEventListener("click",render);
+  $("reset").addEventListener("click",reset);
+  $("csv").addEventListener("click",csv);
+  $("print").addEventListener("click",()=>window.print());
+  $("form").addEventListener("submit",e=>{e.preventDefault();render();});
+  fields.forEach(id=>$(id).addEventListener("change",render));
+  $("year").textContent=new Date().getFullYear();
+  render();
+})();
+</script>
+</body>
+</html>
